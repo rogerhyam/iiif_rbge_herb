@@ -28,9 +28,12 @@ if($_GET['region'] == 'full'){
 	
 	// plus lets do some common thumbnails because these are often hard coded in viewers?
 	// plus it makes it easy to give thumbnails without knowing image details.
-	$accepted_widths = array(75, 90, 100, 150, 200);
-	if(!$size_h && in_array($size_w, $accepted_widths)){
-		return_thumbnail($barcode, $size_w, $image_props);
+	if(!$size_h){
+		return_thumbnail($barcode, $size_w, 'width', $image_props);
+	}
+	
+	if(!$size_w){
+		return_thumbnail($barcode, $size_h, 'height', $image_props);
 	}
 	
 	// got to here so they are not asking for a image size we understand.
@@ -97,13 +100,13 @@ function get_closest($search, $arr) {
 }
 
 
-function return_thumbnail($barcode, $width, $image_props){
+function return_thumbnail($barcode, $size, $dimension, $image_props){
 	
 	global $image_url;
 
 	
 	// check if we have a cached version of the thumbnail
-	$thumb_cached_path = 'cache/' . $barcode . '-thumb-' . $width . '.jpg';
+	$thumb_cached_path = 'cache/' . $barcode . '-thumb-' . $dimension . '-'. $size . '.jpg';
 	if(file_exists($thumb_cached_path)){
 		header("Content-Type: image/jpeg");
 		readfile($thumb_cached_path);
@@ -113,7 +116,7 @@ function return_thumbnail($barcode, $width, $image_props){
 	$layers = $image_props['zoomify_layers'];
 	$level = -1;
 	for ($i=0; $i < count($layers); $i++) { 
-		if($layers[$i]['width'] >= $width){
+		if($layers[$i][$dimension] >= $size){
 			$level = $i;
 			break;
 		}
@@ -134,11 +137,17 @@ function return_thumbnail($barcode, $width, $image_props){
 		$image->writeImage($full_cached_path);
 	}
 	
-	$image->scaleImage($width, 0, false);
+	if($dimension == 'width'){
+		$image->scaleImage($size, 0, false);
+	}else{
+		$image->scaleImage(0, $size, false);
+	}
+	
 	$image->writeImage($thumb_cached_path);
 	
 	header('Content-Type: image/jpeg');
 	echo $image;
+	
 
 }
 

@@ -4,6 +4,7 @@
 // commercial sites this would be set lower for production
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 date_default_timezone_set('UTC');
 
 // we are always called with a barcode so let's build a base URI for all the subsequent calls
@@ -94,8 +95,8 @@ function get_image_properties($barcode){
 		$layer['tiles_in_layer'] = $layer['rows'] * $layer['cols'];
 		
 		// half it for the next time around
-		$w = $w/2;
-		$h = $h/2;
+		$w = floor($w/2);
+		$h = floor($h/2);
 	
 		$zlayers[] = $layer;
 	}

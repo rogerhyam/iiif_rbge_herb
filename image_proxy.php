@@ -7,25 +7,34 @@ $image_props = get_image_properties($barcode); // gets the details about the ima
 
 //print_r($image_props);
 
-// the region is specified at the scale of the whole image
+// the size is the actual dimensions of the image to be returned
+$size = explode(',', $_GET['size']);
+list($size_w, $size_h) = $size;
+
+// the region of the original is specified at the scale of the whole image
 // We are either asked for an x/y/w/h region or possibly 'full'
 if($_GET['region'] == 'full'){
 	
-	$region_x = 0;
-	$region_y = 0;
-	$region_w = $image_props['width'];
-	$region_h = $image_props['height'];
+	// if it is full then we only support returning images of sizes that match the 
+	// sizes of complete layers in the zoomify stack.
+	for ($i=0; $i < count($image_props['zoomify_layers']); $i++) { 
+		$zlayer = $image_props['zoomify_layers'][$i];
+		//print_r($zlayer);
+		if($zlayer['width'] == $size_w && $zlayer['height'] == $size_h){
+			return_full_image($barcode, $i);
+			exit();
+		}
+	}
+
+	// got to here so they are not asking for a image size we understand.
+	http_response_code(400);
+	echo "Sorry: Can only handle full image requests of specific size.";
+	exit;
 	
 }else{
 	$region = explode(',', $_GET['region']);
 	list($region_x, $region_y, $region_w, $region_h) = $region;
 }
-
-
-
-// the size is the actual dimensions of the returned image
-$size = explode(',', $_GET['size']);
-list($size_w, $size_h) = $size;
 
 // the scale factor is a whole number because we have specified 
 // we only support scaling by different factors
@@ -44,14 +53,12 @@ if($region_w / $scale_factor < 1 or $region_h / $scale_factor < 1){
 	
 // zoomify works the other way around. Layer 0 tiles are lowest magnification (highest scale factor)
 // get the closest zoomify layer 
-
 $zoomify_layer = array_search($scale_factor, array_reverse($image_props['layers']));
 $zoomify_layer++; // why do I need this?
 
 
 // which zoomify column and row are we looking at?
 // work out the size of the image at this zoom level
-
 $zoomify_col = round(($region_x / $scale_factor) / 256);
 $zoomify_row = round(($region_y / $scale_factor) / 256);
 
@@ -81,6 +88,56 @@ function get_closest($search, $arr) {
       }
    }
    return $closest;
+}
+
+function return_full_image($barcode, $level){
+	
+	// check if we have it cached before we do anything else
+	$cached_path = 'cache/' . $barcode . '-' . $level . '.jpg';
+	if(file_exists($cached_path)){
+		header("Content-Type: image/jpg");
+		readfile($cached_path);
+		exit;
+	}
+
+	// no cached version so let's build one
+
+	$image_props = get_image_properties($barcode);
+
+	$layers = $image_props['zoomify_layers'];
+
+	$layer = $layers[$level];
+
+	$rows = new Imagick();
+	for ($i=0; $i < $layer['rows']; $i++) {
+	
+		$row = new Imagick();
+	
+		for ($j=0; $j < $layer['cols']; $j++) {		
+			$tile_group = get_tile_group($layers, $level, $j, $i);
+			$uri = "$image_url/TileGroup$tile_group/$level-$j-$i.jpg";
+			$row->addImage(new Imagick($uri));
+		}
+	
+		// stitch the row into a single image
+		$row->resetIterator();
+	
+		// add it to the rows
+		$rows->addImage($row->appendImages(false));
+	
+	}
+
+	$rows->resetIterator();
+	$combined = $rows->appendImages(true); // append them vertically
+	$combined->setImageFormat("jpg");
+
+	// cache it so we don't have to create it again
+	$combined->writeImage($cached_path);
+
+	header('Content-Type: image/jpeg');
+	header("Access-Control-Allow-Origin: *");
+	echo $combined;
+	
 }
 	
 ?>

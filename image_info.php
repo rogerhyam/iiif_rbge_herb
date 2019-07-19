@@ -26,6 +26,14 @@ $out->tiles = array($tiles);
 
 $out->sizes = array();
 
+foreach($props['zoomify_layers'] as $layer){
+	$size = new stdClass();
+	$size->width = $layer["width"];
+	$size->height = $layer["height"];
+	$out->sizes[] = $size;
+	
+}
+
 //print_r($out);
 $json = json_encode( $out, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES );
 

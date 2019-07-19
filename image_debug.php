@@ -7,12 +7,17 @@
 	$barcode = $_GET['barcode'];
 	$props = get_image_properties($barcode);
 	
-	$layers = $props['zoomify_layers']
+	$layers = $props['zoomify_layers'];
+		
+		
 	
 	
 	
 	// print out a summary of the layers
 ?>
+<pre>
+<?php echo print_r($props); ?>	
+</pre>
 <table>
 	<tr>
 		<th>Level</th>

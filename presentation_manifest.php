@@ -1,6 +1,9 @@
 <?php
 
 include_once('config.php');
+include_once('SolrConnection.php');
+
+
 
 // creates a iiif manifest for the specimen passed in 
 $barcode = $_GET['barcode'];
@@ -10,43 +13,26 @@ $out = new stdClass();
 $out->context = array("http://www.w3.org/ns/anno.jsonld","http://iiif.io/api/presentation/3/context.json");
 $out->id = "$base_url/manifest";
 $out->type = "Manifest";
-
 $out->label = create_label("Specimen: $barcode");
 
-// get the DwC from the DB
-$response = $mysqli->query("SELECT * FROM darwin_core WHERE CatalogNumber = '$barcode'");
-if ($mysqli->error) {
-    echo $mysqli->error;
-    exit(1);
-}
-$row = $response->fetch_assoc();
+$solr = new SolrConnection();
+$specimen = $solr->get_specimen($barcode);
+
 $out->metadata = array();
 
-$out->metadata[] = create_key_value_label('CTAF ID', "<a href=\"" . $row['GloballyUniqueIdentifier'] . "\">" .$row['GloballyUniqueIdentifier']. "</a>" );
-$out->metadata[] = create_key_value_label('Catalogue Number', $row['CatalogNumber']);
-$out->metadata[] = create_key_value_label('Scientific Name', $row['ScientificName']);
-$out->metadata[] = create_key_value_label('Collector', $row['Collector']);
-$out->metadata[] = create_key_value_label('Collector Number', $row['CollectorNumber']);
-$out->metadata[] = create_key_value_label('Family', $row['Family']);
-$out->metadata[] = create_key_value_label('Genus', $row['Genus']);
-$out->metadata[] = create_key_value_label('Species', $row['SpecificEpithet']);
-$out->metadata[] = create_key_value_label('Higher Geography', $row['HigherGeography']);
-$out->metadata[] = create_key_value_label('Field Notes', $row['FieldNotes']);
-$out->metadata[] = create_key_value_label('Country', $row['Country']);
-$out->metadata[] = create_key_value_label('State/Province', $row['StateProvince']);
-$out->metadata[] = create_key_value_label('County', $row['County']);
-$out->metadata[] = create_key_value_label('Locality', $row['Locality']);
-$out->metadata[] = create_key_value_label('Collected', $row['EarliestDateCollected']);
-$out->metadata[] = create_key_value_label('Verbatim Collected', $row['VerbatimCollectingDate']);
-$out->metadata[] = create_key_value_label('Verbatim Elevation', $row['VerbatimElevation']);
-$out->metadata[] = create_key_value_label('Min Elevation m', $row['MinimumElevationInMeters']);
-$out->metadata[] = create_key_value_label('Max Elevation m', $row['MaximumElevationInMeters']);
-$out->metadata[] = create_key_value_label('Type Status', $row['TypeStatus']);
-$out->metadata[] = create_key_value_label('Geodetic Datum', $row['GeodeticDatum']);
-$out->metadata[] = create_key_value_label('Verbatim Longitude', $row['VerbatimLongitude']);
-$out->metadata[] = create_key_value_label('Verbatim Latitude', $row['VerbatimLatitude']);
-$out->metadata[] = create_key_value_label('Decimal Longitude', $row['DecimalLongitude']);
-$out->metadata[] = create_key_value_label('Decimal Latitude', $row['DecimalLatitude']);
+$guid = "http://data.rbge.org.uk/herb/" . $barcode;
+$out->metadata[] = create_key_value_label('CTAF ID', "<a href=\"$guid\">$guid</a>" );
+$out->metadata[] = create_key_value_label('Catalogue Number', $barcode);
+$out->metadata[] = create_key_value_label('Scientific Name', $specimen->current_name_ni);
+$out->metadata[] = create_key_value_label('Collector', $specimen->collector_s);
+$out->metadata[] = create_key_value_label('Collector Number', $specimen->collector_num_s);
+$out->metadata[] = create_key_value_label('Family', ucfirst(strtolower($specimen->family_ni)));
+$out->metadata[] = create_key_value_label('Genus', ucfirst(strtolower($specimen->genus_ni)));
+$out->metadata[] = create_key_value_label('Species', strtolower($specimen->species_ni));
+$out->metadata[] = create_key_value_label('Field Notes', $specimen->description_ni);
+$out->metadata[] = create_key_value_label('Country', $specimen->country_s);
+$out->metadata[] = create_key_value_label('State/Province', $specimen->sub_country1_ni);
+$out->metadata[] = create_key_value_label('Locality', $specimen->locality_ni);
 
 $out->summary = new stdClass();
 $out->summary = array("Summary of Specimen: $barcode");

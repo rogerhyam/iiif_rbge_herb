@@ -7,46 +7,12 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 date_default_timezone_set('UTC');
 
+define('SOLR_QUERY_URI', "http://webed08.rbge.org.uk:8080/solr/bgbase/select?q=");
+
 // we are always called with a barcode so let's build a base URI for all the subsequent calls
 $base_url = 'https://'. $_SERVER['HTTP_HOST'] . '/herb/iiif/' . @$_GET['barcode'];
 
 $image_url = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path=". @$_GET['barcode'].".zip;file:";
-
-/*
- *  Database config variables
- *
-*/
-/*
-$db_host = '**';
-$db_database = '**';
-$db_user = '**';
-$db_password = '**';
-*/
-
-// hide the database config outside of Github and web dir
-require_once('../../iiif_secret_config.php');
-
-/*
- *  Try and connect to the database.
- *  and give up if we can't - printing error message
- *
- *  We use the $mysqli variable in subsequent scripts
- *  
- */
-$mysqli = new mysqli($db_host, $db_user, $db_password, $db_database);    
-// connect to the database
-if ($mysqli->connect_error) {
-    echo $mysqli->connect_error;
-    exit(1);
-}
-
-//change character set to utf8
-if (!$mysqli->set_charset("utf8")) {
-    printf("<!-- Error loading character set utf8: %s -->\n", $mysqli->error);
-} else {
-    //printf("<!-- Current character set: %s -->\n", $mysqli->character_set_name());
-}
-
 
 function get_image_properties($barcode){
 	

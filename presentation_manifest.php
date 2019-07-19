@@ -32,7 +32,7 @@ $out->metadata[] = create_key_value_label('Species', strtolower($specimen->speci
 $out->metadata[] = create_key_value_label('Field Notes', $specimen->description_ni);
 $out->metadata[] = create_key_value_label('Country', $specimen->country_s);
 $out->metadata[] = create_key_value_label('State/Province', $specimen->sub_country1_ni);
-$out->metadata[] = create_key_value_label('Locality', $specimen->locality_ni);
+$out->metadata[] = create_key_value_label('Locality', $specimen->locality_ni);	
 
 $out->summary = new stdClass();
 $out->summary = array("Summary of Specimen: $barcode");

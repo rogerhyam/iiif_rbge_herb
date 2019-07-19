@@ -97,7 +97,7 @@ function return_full_image($barcode, $level){
 	// check if we have it cached before we do anything else
 	$cached_path = 'cache/' . $barcode . '-' . $level . '.jpg';
 	if(file_exists($cached_path)){
-		header("Content-Type: image/jpg");
+		header("Content-Type: image/jpeg");
 		readfile($cached_path);
 		exit;
 	}

@@ -4,6 +4,7 @@ include_once('config.php');
 
 // creates a iiif manifest for the specimen passed in 
 $barcode = $_GET['barcode'];
+$props = get_image_properties($barcode);
 
 $out = new stdClass();
 $out->context = array("http://www.w3.org/ns/anno.jsonld","http://iiif.io/api/presentation/3/context.json");
@@ -51,24 +52,58 @@ $out->summary = new stdClass();
 $out->summary = array("Summary of Specimen: $barcode");
 $out->viewingDirection = "left-to-right";
 
+$out->thumbnail = array();
+$out->thumbnail[] = new stdClass();
+
+// the thumbnail is an actual link to an image of an appropriate size 
+// we pick the level 1 of the zoomify tile pyramid and ask for that.
+// https://iiif.rbge.org.uk/herb/iiif/E00001237/full/824,1258/0/default.jpg
+
+$out->thumbnail[0]->id = $base_url . '/full/' . $props['zoomify_layers'][1]['width'] . ',' . $props['zoomify_layers'][1]['height'] . '/0/default.jpg';;
+$out->thumbnail[0]->type = "Image";
+$out->thumbnail[0]->service = array();
+$out->thumbnail[0]->service[0] = new stdClass();
+$out->thumbnail[0]->service[0]->id = $base_url;
+$out->thumbnail[0]->service[0]->type = "ImageService3";
+$out->thumbnail[0]->service[0]->profile = "level0";
+
+$out->rights = "https://creativecommons.org/licenses/by-sa/2.5/";
+$out->requiredStatement = create_key_value_label("Attribution", "Royal Botanic Garden Edinburgh");
+
+
+$rbge = new stdClass();
+$rbge->id = "http://www.rbge.org.uk";
+$rbge->type = "Agent";
+$rbge->label = create_label("Royal Botanic Garden Edinburgh");
+$rbge->homepage = array(
+	(object)array(
+		"id" => "http://www.rbge.org.uk",
+		"type" => "Text",
+		"label" => create_label("Royal Botanic Garden Edinburgh"),
+		"format" => "text/html" 
+	)
+);
+$rbge->logo = (object)array(
+	"id" => 'https://'. $_SERVER['HTTP_HOST'] . '/herb/rbge_logo.png',	
+	"type" => "Image",
+	"format" => "image/png"
+);
+
+// v2 support logo - could be removed when Mirador supports v3.0 properly
+$out->logo = (object)array(
+	"_id" => 'https://'. $_SERVER['HTTP_HOST'] . '/herb/rbge_logo.png'
+);
+
+
+$out->provider = array();
+$out->provider[] = $rbge;
+
 $canvas = new stdClass();
 $out->items = array($canvas);
 $canvas->id = "$base_url/canvas";
 $canvas->type = "Canvas";
 $canvas->label = create_label("Scan");
 
-$canvas->thumbnail = array();
-$canvas->thumbnail[] = new stdClass();
-$canvas->thumbnail[0]->id = $base_url;
-$canvas->thumbnail[0]->type = "Image";
-$canvas->thumbnail[0]->service = array();
-$canvas->thumbnail[0]->service[0] = new stdClass();
-$canvas->thumbnail[0]->service[0]->id = $base_url;
-$canvas->thumbnail[0]->service[0]->type = "ImageService3";
-$canvas->thumbnail[0]->service[0]->profile = "level0";
-
-
-$props = get_image_properties($barcode);
 $canvas->height = $props['height'];
 $canvas->width = $props['width'];
 
@@ -108,6 +143,7 @@ $json = json_encode( $out, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES );
 
 // total hack to add the @ to the context attribute (not acceptable in php)
 $json = str_replace('"context":','"@context":', $json);
+$json = str_replace('"_id":','"@id":', $json);
 
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");

@@ -7,11 +7,16 @@
     RewriteEngine On
     RewriteBase /herb/
     
-    # rules for rbge
+    # Presentation manifest API
     RewriteRule ^iiif/([^/]*)$           iiif/$1/manifest [R=303]
     RewriteRule ^iiif/([^/]*)/manifest$  presentation_manifest.php?barcode=$1 [PT]
-    RewriteRule ^iiif/collection/([^/]*)/(.*)$  presentation_collection.php?genus=$1&species=$2 [PT]
     RewriteRule ^iiif/([^/]*)/annotation$ presentation_manifest.php?barcode=$1 [PT]
+
+    # Presentation collection API
+    # /collection/country/family/genus/species
+    RewriteRule ^iiif/collection/([^/]*)/([^/]*)/(.*)$  presentation_collection.php?family=$1&genus=$2&species=$3 [PT]
+
+    # Image API
     RewriteRule ^iiif/([^/]*)/info\.json  image_info.php?barcode=$1 [PT]
     # {scheme}://{server}{/prefix}/{identifier}/{region}/{size}/{rotation}/{quality}.{format}
     RewriteRule ^iiif/([^/]*)/([^/]*)/([^/]*)/([^/]*)/([^/]*)\.jpg image_proxy.php?barcode=$1&region=$2&size=$3&rotation=$4&quality=$5 [PT]

@@ -21,15 +21,35 @@ class SolrConnection
 
 	function query($query){
     
-	    $uri = SOLR_QUERY_URI . urlencode($query) . '&rows=1000';
+	    $uri = SOLR_QUERY_URI . 'select?q=' . urlencode($query) . '&rows=1000';
 		
 	    $ch = curl_init( $uri );
 	    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
     
 	    // Send request.
 	    $result = curl_exec($ch);
-	    curl_close($ch);
+	    curl_close($ch);	
+		
 	    return json_decode($result);
+	}
+	
+	function query_object($q){
+		
+		$json = json_encode($q);
+
+		$ch = curl_init( SOLR_QUERY_URI . 'query' );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+		    'Content-Type: application/json',
+		    'Content-Length: ' . strlen($json))
+		);
+		// Send request.
+		$result = curl_exec($ch);
+		curl_close($ch);
+		
+		return json_decode($result);
+		
 	}
 	
 

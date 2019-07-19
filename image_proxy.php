@@ -21,11 +21,18 @@ if($_GET['region'] == 'full'){
 		$zlayer = $image_props['zoomify_layers'][$i];
 		//print_r($zlayer);
 		if($zlayer['width'] == $size_w && $zlayer['height'] == $size_h){
-			return_full_image($barcode, $i);
+			return_full_image($barcode, $i, $image_props);
 			exit();
 		}
 	}
-
+	
+	// plus lets do some common thumbnails because these are often hard coded in viewers?
+	// plus it makes it easy to give thumbnails without knowing image details.
+	$accepted_widths = array(75, 90, 100, 150, 200);
+	if(!$size_h && in_array($size_w, $accepted_widths)){
+		return_thumbnail($barcode, $size_w, $image_props);
+	}
+	
 	// got to here so they are not asking for a image size we understand.
 	http_response_code(400);
 	echo "Sorry: Can only handle full image requests of specific size.";
@@ -89,10 +96,55 @@ function get_closest($search, $arr) {
    return $closest;
 }
 
-function return_full_image($barcode, $level){
+
+function return_thumbnail($barcode, $width, $image_props){
 	
 	global $image_url;
+
 	
+	// check if we have a cached version of the thumbnail
+	$thumb_cached_path = 'cache/' . $barcode . '-thumb-' . $width . '.jpg';
+	if(file_exists($thumb_cached_path)){
+		header("Content-Type: image/jpeg");
+		readfile($thumb_cached_path);
+		exit;
+	}
+	
+	$layers = $image_props['zoomify_layers'];
+	$level = -1;
+	for ($i=0; $i < count($layers); $i++) { 
+		if($layers[$i]['width'] >= $width){
+			$level = $i;
+			break;
+		}
+	}
+
+	if($level == -1){
+		http_response_code(400);
+		echo "Sorry: Can only handle full image requests of specific size. Not width $width";
+		exit;
+	}
+	
+	// load the full image 
+	$full_cached_path = 'cache/' . $barcode . '-' . $level . '.jpg';
+	if(file_exists($full_cached_path)){
+		$image = new Imagick($full_cached_path);
+	}else{
+		$image  = get_full_image($level, $image_props);
+		$image->writeImage($full_cached_path);
+	}
+	
+	$image->scaleImage($width, 0, false);
+	$image->writeImage($thumb_cached_path);
+	
+	header('Content-Type: image/jpeg');
+	echo $image;
+
+}
+
+
+function return_full_image($barcode, $level, $image_props){
+		
 	// check if we have it cached before we do anything else
 	$cached_path = 'cache/' . $barcode . '-' . $level . '.jpg';
 	if(file_exists($cached_path)){
@@ -101,10 +153,20 @@ function return_full_image($barcode, $level){
 		exit;
 	}
 
-	// no cached version so let's build one
+	$combined = get_full_image($level, $image_props);
+	
+	// cache it so we don't have to create it again
+	$combined->writeImage($cached_path);
 
-	$image_props = get_image_properties($barcode);
+	header('Content-Type: image/jpeg');
+	echo $combined;
+	
+}
 
+function get_full_image($level, $image_props){
+	
+	global $image_url;
+	
 	$layers = $image_props['zoomify_layers'];
 
 	$layer = $layers[$level];
@@ -131,13 +193,8 @@ function return_full_image($barcode, $level){
 	$rows->resetIterator();
 	$combined = $rows->appendImages(true); // append them vertically
 	$combined->setImageFormat("jpg");
-
-	// cache it so we don't have to create it again
-	$combined->writeImage($cached_path);
-
-	header('Content-Type: image/jpeg');
-	echo $combined;
 	
+	return $combined;
 }
 	
 ?>

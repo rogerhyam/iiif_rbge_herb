@@ -23,16 +23,16 @@ $out->metadata = array();
 $guid = "http://data.rbge.org.uk/herb/" . $barcode;
 $out->metadata[] = create_key_value_label('CTAF ID', "<a href=\"$guid\">$guid</a>" );
 $out->metadata[] = create_key_value_label('Catalogue Number', $barcode);
-$out->metadata[] = create_key_value_label('Scientific Name', $specimen->current_name_ni);
-$out->metadata[] = create_key_value_label('Collector', $specimen->collector_s);
-$out->metadata[] = create_key_value_label('Collector Number', $specimen->collector_num_s);
-$out->metadata[] = create_key_value_label('Family', ucfirst(strtolower($specimen->family_ni)));
-$out->metadata[] = create_key_value_label('Genus', ucfirst(strtolower($specimen->genus_ni)));
-$out->metadata[] = create_key_value_label('Species', strtolower($specimen->species_ni));
-$out->metadata[] = create_key_value_label('Field Notes', $specimen->description_ni);
-$out->metadata[] = create_key_value_label('Country', $specimen->country_s);
-$out->metadata[] = create_key_value_label('State/Province', $specimen->sub_country1_ni);
-$out->metadata[] = create_key_value_label('Locality', $specimen->locality_ni);	
+if(isset($specimen->current_name_ni)) $out->metadata[] = create_key_value_label('Scientific Name', $specimen->current_name_ni);
+if(isset($specimen->current_name_ni)) $out->metadata[] = create_key_value_label('Collector', $specimen->collector_s);
+if(isset($specimen->collector_num_s)) $out->metadata[] = create_key_value_label('Collector Number', $specimen->collector_num_s);
+if(isset($specimen->family_ni)) $out->metadata[] = create_key_value_label('Family', ucfirst(strtolower($specimen->family_ni)));
+if(isset($specimen->genus_ni)) $out->metadata[] = create_key_value_label('Genus', ucfirst(strtolower($specimen->genus_ni)));
+if(isset($specimen->species_ni)) $out->metadata[] = create_key_value_label('Species', strtolower($specimen->species_ni));
+if(isset($specimen->description_ni)) $out->metadata[] = create_key_value_label('Field Notes', $specimen->description_ni);
+if(isset($specimen->country_s)) $out->metadata[] = create_key_value_label('Country', $specimen->country_s);
+if(isset($specimen->sub_country1_ni)) $out->metadata[] = create_key_value_label('State/Province', $specimen->sub_country1_ni);
+if(isset($specimen->locality_ni)) $out->metadata[] = create_key_value_label('Locality', $specimen->locality_ni);	
 
 $out->summary = new stdClass();
 $out->summary = array("Summary of Specimen: $barcode");
@@ -132,7 +132,6 @@ $json = str_replace('"context":','"@context":', $json);
 $json = str_replace('"_id":','"@id":', $json);
 
 header('Content-Type: application/json');
-header("Access-Control-Allow-Origin: *");
 echo $json;
 
 	

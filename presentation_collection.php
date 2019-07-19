@@ -4,8 +4,13 @@
 
 require_once('config.php');
 
-$genus = $_GET['genus'];
-$species = $_GET['species'];
+
+// how about this as a url pattern?
+
+// ^iiif/collection/<herbarium code>/<2 letter iso country>/<family>/<genus>/<species>/<collection year>/<collector>
+// all can use Solr search criteria or be ommitted with a -
+
+
 
 // fixme - catch injection
 
@@ -65,7 +70,6 @@ $json = json_encode( $out, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES );
 $json = str_replace('"context":','"@context":', $json);
 
 header('Content-Type: application/json');
-header("Access-Control-Allow-Origin: *");
 echo $json;
 
 	

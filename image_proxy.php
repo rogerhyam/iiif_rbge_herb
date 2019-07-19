@@ -74,7 +74,6 @@ $url = "$image_url/TileGroup$tile_group/$zoomify_layer-$zoomify_col-$zoomify_row
 //exit;
 
 header('Content-Type: image/jpeg');
-header("Access-Control-Allow-Origin: *");
 readfile($url);
 
 
@@ -137,7 +136,6 @@ function return_full_image($barcode, $level){
 	$combined->writeImage($cached_path);
 
 	header('Content-Type: image/jpeg');
-	header("Access-Control-Allow-Origin: *");
 	echo $combined;
 	
 }

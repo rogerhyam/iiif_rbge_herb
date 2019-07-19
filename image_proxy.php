@@ -92,6 +92,8 @@ function get_closest($search, $arr) {
 
 function return_full_image($barcode, $level){
 	
+	global $image_url;
+	
 	// check if we have it cached before we do anything else
 	$cached_path = 'cache/' . $barcode . '-' . $level . '.jpg';
 	if(file_exists($cached_path)){

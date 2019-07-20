@@ -1,11 +1,15 @@
 <?php
 	
-// returns a manifest that is a book of sheets from a single genus
+// This is experimental code.
+// if passed a genus and species it will create a "book" of specimens that can be paged through
+// we need metadata on the individual canvases though
+// also would it be of any use to anyone?
 
 require_once('config.php');
 require_once('SolrConnection.php');
 
 $genus = $_GET['genus'];
+$species = $_GET['species'];
 
 // this is the query we are building
 $q = (object)array(
@@ -13,6 +17,7 @@ $q = (object)array(
 		"filter" => array(
 			'has_images_i:1',
 			'genus_ni:' . strtoupper($genus),
+			'species_ni:' . strtolower($species),
 			'record_type_s:specimen'
 		),
 		"limit" => 10000
@@ -23,14 +28,9 @@ $result = $solr->query_object($q);
 
 $out = new stdClass();
 $out->context = array("http://www.w3.org/ns/anno.jsonld","http://iiif.io/api/presentation/3/context.json");
-$out->id = "$base_url/manifest";
+$out->id = "$base_url". "book/$genus/$species";
 $out->type = "Manifest";
-$out->label = create_label( "Book of " . ucwords(strtolower($genus)) . " specimens" );
-
-//$out->metadata = array();
-//$guid = "http://data.rbge.org.uk/herb/" . $barcode;
-//$out->metadata[] = create_key_value_label('CTAF ID', "<a href=\"$guid\">$guid</a>" );
-//$out->metadata[] = create_key_value_label('Catalogue Number', $barcode);
+$out->label = create_label( "Book of " . ucwords(strtolower($genus)) . ' ' . strtolower($species) . " specimens" );
 
 $rbge = new stdClass();
 $rbge->id = "http://www.rbge.org.uk";
@@ -67,47 +67,43 @@ $out->items = array();
 
 foreach($result->response->docs as $specimen){
 	
-	$base_url = 'https://'. $_SERVER['HTTP_HOST'] . '/herb/iiif/' . $specimen->barcode_s;
-	$props = get_image_properties($specimen->barcode_s);
-	
+	$barcode = $specimen->barcode_s;
+
+	$base_url = 'https://'. $_SERVER['HTTP_HOST'] . '/herb/iiif/' . $barcode;
+	$props = get_image_properties($barcode);
+
 	$canvas = new stdClass();
 	$out->items[] = $canvas;
-	$canvas->id = "$base_url/canvas";
+	$canvas->id = "$base_url#canvas";
 	$canvas->type = "Canvas";
-	$canvas->label = create_label($specimen->barcode_s);
-
+	$canvas->label = create_label($barcode);
 	$canvas->height = $props['height'];
 	$canvas->width = $props['width'];
-
 	// annotation page
 	$canvas->items = array();
 	$image_anno_page = new stdClass();
 	$canvas->items[] = $image_anno_page;
-	$image_anno_page->id = "$base_url/annotation_page";
+	$image_anno_page->id = "$base_url#annotation_page";
 	$image_anno_page->type = "AnnotationPage";
-
 	// annotation
 	$image_anno = new stdClass();
 	$image_anno_page->items = array($image_anno);
-	$image_anno->id = "$base_url/annotation";
+	$image_anno->id = "$base_url#annotation";
 	$image_anno->type = "Annotation";
 	$image_anno->motivation = "Painting";
 	$image_anno->body = new stdClass();
 	$image_anno->body->id = "$base_url/info.json";
 	$image_anno->body->type = "Image";
 	$image_anno->body->format = "image/jpeg";
-
 	$service = new stdClass();
 	$service->id = $base_url;
 	$service->type = "ImageService3";
 	$service->profile = "level0";
-
 	$image_anno->body->service = array($service);
-
 	$image_anno->body->height = $props['height'];
 	$image_anno->body->width = $props['width'];
-
-	$image_anno->target = "$base_url/canvas";
+	$image_anno->target = "$base_url#canvas";
+		
 }
 
 

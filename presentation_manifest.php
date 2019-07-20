@@ -86,7 +86,7 @@ $out->provider[] = $rbge;
 
 $canvas = new stdClass();
 $out->items = array($canvas);
-$canvas->id = "$base_url/canvas";
+$canvas->id = "$base_url#canvas";
 $canvas->type = "Canvas";
 $canvas->label = create_label($barcode);
 
@@ -97,13 +97,13 @@ $canvas->width = $props['width'];
 $canvas->items = array();
 $image_anno_page = new stdClass();
 $canvas->items[] = $image_anno_page;
-$image_anno_page->id = "$base_url/annotation_page";
+$image_anno_page->id = "$base_url#annotation_page";
 $image_anno_page->type = "AnnotationPage";
 
 // annotation
 $image_anno = new stdClass();
 $image_anno_page->items = array($image_anno);
-$image_anno->id = "$base_url/annotation";
+$image_anno->id = "$base_url#annotation";
 $image_anno->type = "Annotation";
 $image_anno->motivation = "Painting";
 $image_anno->body = new stdClass();
@@ -121,7 +121,7 @@ $image_anno->body->service = array($service);
 $image_anno->body->height = $props['height'];
 $image_anno->body->width = $props['width'];
 
-$image_anno->target = "$base_url/canvas";
+$image_anno->target = "$base_url#canvas";
 
 
 //print_r($out);

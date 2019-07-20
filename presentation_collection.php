@@ -1,6 +1,7 @@
 <?php
 	
-// render a collection based on the family or genus of the specimen
+// allows family/genus/species browsing of specimens.
+// little viewer support for this but may be useful exploratory resource
 
 require_once('config.php');
 require_once('SolrConnection.php');

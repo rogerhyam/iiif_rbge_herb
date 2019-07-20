@@ -13,7 +13,7 @@
     RewriteRule ^iiif/([^/]*)/annotation$ presentation_manifest.php?barcode=$1 [PT]
 
     # Presentation manifest of genus as book
-    RewriteRule ^iiif/book/([^/]*)$  presentation_book.php?genus=$1 [PT]
+    RewriteRule ^iiif/book/([^/]*)/([^/]*)$  presentation_book.php?genus=$1&species=$2 [PT]
 
     # Presentation collection API
     # /collection/country/family/genus/species

@@ -21,7 +21,7 @@ $specimen = $solr->get_specimen($barcode);
 $out->metadata = array();
 
 $guid = "http://data.rbge.org.uk/herb/" . $barcode;
-$out->metadata[] = create_key_value_label('CTAF ID', "<a href=\"$guid\">$guid</a>" );
+$out->metadata[] = create_key_value_label('CETAF ID', "<a href=\"$guid\">$guid</a>" );
 $out->metadata[] = create_key_value_label('Catalogue Number', $barcode);
 if(isset($specimen->current_name_ni)) $out->metadata[] = create_key_value_label('Scientific Name', $specimen->current_name_ni);
 if(isset($specimen->collector_s)) $out->metadata[] = create_key_value_label('Collector', $specimen->collector_s);

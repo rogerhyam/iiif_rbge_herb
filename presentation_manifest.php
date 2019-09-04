@@ -9,14 +9,14 @@ include_once('SolrConnection.php');
 $barcode = $_GET['barcode'];
 $props = get_image_properties($barcode);
 
+$solr = new SolrConnection();
+$specimen = $solr->get_specimen($barcode);
+
 $out = new stdClass();
 $out->context = array("http://www.w3.org/ns/anno.jsonld","http://iiif.io/api/presentation/3/context.json");
 $out->id = "$base_url/manifest";
 $out->type = "Manifest";
-$out->label = create_label("Specimen: $barcode");
-
-$solr = new SolrConnection();
-$specimen = $solr->get_specimen($barcode);
+$out->label = create_label("Specimen: $specimen->current_name_ni ($barcode)");
 
 $out->metadata = array();
 

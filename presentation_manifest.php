@@ -16,7 +16,8 @@ $out = new stdClass();
 $out->context = array("http://www.w3.org/ns/anno.jsonld","http://iiif.io/api/presentation/3/context.json");
 $out->id = "$base_url/manifest";
 $out->type = "Manifest";
-$out->label = create_label("Specimen: $specimen->current_name_ni ($barcode)");
+$label = strip_tags($specimen->current_name_ni) . " ($barcode)";
+$out->label = create_label($label);
 
 $out->metadata = array();
 

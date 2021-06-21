@@ -26,7 +26,7 @@ function get_image_properties($barcode){
 	$data = curl_exec($handle);
 	curl_close($handle);
 
-	$xml=simplexml_load_string($data);
+	$xml= @simplexml_load_string($data);
 	if ($xml === false) {
 		http_response_code(404);
 		echo "<h1>Not Found</h1>";

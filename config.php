@@ -7,7 +7,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 date_default_timezone_set('UTC');
 
-define('SOLR_QUERY_URI', "http://192.168.150.67:8080/solr/bgbase/");
+define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/");
 
 // we are always called with a barcode so let's build a base URI for all the subsequent calls
 $base_url = 'https://'. $_SERVER['HTTP_HOST'] . '/herb/iiif/' . @$_GET['barcode'];

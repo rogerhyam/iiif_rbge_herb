@@ -46,7 +46,8 @@ $out->thumbnail[] = new stdClass();
 // we pick the level 1 of the zoomify tile pyramid and ask for that.
 // https://iiif.rbge.org.uk/herb/iiif/E00001237/full/824,1258/0/default.jpg
 
-$out->thumbnail[0]->id = $base_url . '/full/' . $props['zoomify_layers'][1]['width'] . ',' . $props['zoomify_layers'][1]['height'] . '/0/default.jpg';;
+// $out->thumbnail[0]->id = $base_url . '/full/' . $props['zoomify_layers'][1]['width'] . ',' . $props['zoomify_layers'][1]['height'] . '/0/default.jpg';
+$out->thumbnail[0]->id = $base_url . '/full/' . $props['zoomify_layers'][1]['width'] . ',/0/default.jpg';
 $out->thumbnail[0]->type = "Image";
 $out->thumbnail[0]->service = array();
 $out->thumbnail[0]->service[0] = new stdClass();

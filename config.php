@@ -27,6 +27,17 @@ function get_image_properties($barcode){
 	curl_close($handle);
 
 	$xml=simplexml_load_string($data);
+	if ($xml === false) {
+		http_response_code(404);
+		echo "<h1>Not Found</h1>";
+		echo "<p>The barcode $barcode couldn't be found";
+		foreach(libxml_get_errors() as $error) {
+			echo "<p>";
+			echo $error->message;
+			echo "</p>";
+		}
+		exit;
+	}
 	
 	$out['width'] = (int)$xml['WIDTH'];
 	$out['height'] = (int)$xml['HEIGHT'];

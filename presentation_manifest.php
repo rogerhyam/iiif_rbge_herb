@@ -124,6 +124,17 @@ foreach($specimen->image_filename_nis as $file){
 	$image_anno_page->id = $base_url . $image . "#annotation_page";
 	$image_anno_page->type = "AnnotationPage";
 
+	// thumbnail for the canvas
+	$thumbnail = new stdClass();
+	$thumbnail->id = $base_url . $image . '/full/' . $props['zoomify_layers'][1]['width'] . ',/0/default.jpg';
+	$thumbnail->type = "Image";
+	$thumbnail->service = array();
+	$thumbnail->service[0] = new stdClass();
+	$thumbnail->service[0]->id = $base_url . $barcode;
+	$thumbnail->service[0]->type = "ImageService3";
+	$thumbnail->service[0]->profile = "level0";
+	$canvas->thumbnail[] = $thumbnail;
+
 	// annotation
 	$image_anno = new stdClass();
 	$image_anno_page->items = array($image_anno);
@@ -135,11 +146,11 @@ foreach($specimen->image_filename_nis as $file){
 	$image_anno->body->type = "Image";
 	$image_anno->body->format = "image/jpeg";
 
+	// service
 	$service = new stdClass();
 	$service->id = $base_url . $image;
 	$service->type = "ImageService3";
 	$service->profile = "level0";
-
 	$image_anno->body->service = array($service);
 
 	$image_anno->body->height = $props['height'];

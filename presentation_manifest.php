@@ -4,17 +4,22 @@ include_once('config.php');
 include_once('SolrConnection.php');
 
 
-
 // creates a iiif manifest for the specimen passed in 
 $barcode = $_GET['barcode'];
-$props = get_image_properties($barcode);
 
 $solr = new SolrConnection();
 $specimen = $solr->get_specimen($barcode);
 
+if(!$specimen){
+	header("HTTP/1.0 404 Not Found");
+	echo "<h1>Not Found</h1>";
+	echo "Can't load that specimen.\n";
+	exit;
+}
+
 $out = new stdClass();
 $out->context = array("http://www.w3.org/ns/anno.jsonld","http://iiif.io/api/presentation/3/context.json");
-$out->id = "$base_url/manifest";
+$out->id = $base_url . $barcode . "/manifest";
 $out->type = "Manifest";
 $label = strip_tags($specimen->current_name_ni) . " ($barcode)";
 $out->label = create_label($label);
@@ -46,12 +51,14 @@ $out->thumbnail[] = new stdClass();
 // we pick the level 1 of the zoomify tile pyramid and ask for that.
 // https://iiif.rbge.org.uk/herb/iiif/E00001237/full/824,1258/0/default.jpg
 
-// $out->thumbnail[0]->id = $base_url . '/full/' . $props['zoomify_layers'][1]['width'] . ',' . $props['zoomify_layers'][1]['height'] . '/0/default.jpg';
-$out->thumbnail[0]->id = $base_url . '/full/' . $props['zoomify_layers'][1]['width'] . ',/0/default.jpg';
+// there is always and image with the filename of the barcode, there may be others as well.
+// this can be used for the thumbnail
+$props = get_image_properties($barcode);
+$out->thumbnail[0]->id = $base_url . $barcode . '/full/' . $props['zoomify_layers'][1]['width'] . ',/0/default.jpg';
 $out->thumbnail[0]->type = "Image";
 $out->thumbnail[0]->service = array();
 $out->thumbnail[0]->service[0] = new stdClass();
-$out->thumbnail[0]->service[0]->id = $base_url;
+$out->thumbnail[0]->service[0]->id = $base_url . $barcode;
 $out->thumbnail[0]->service[0]->type = "ImageService3";
 $out->thumbnail[0]->service[0]->profile = "level0";
 
@@ -86,45 +93,61 @@ $out->logo = (object)array(
 $out->provider = array();
 $out->provider[] = $rbge;
 
-$canvas = new stdClass();
-$out->items = array($canvas);
-$canvas->id = "$base_url#canvas";
-$canvas->type = "Canvas";
-$canvas->label = create_label($barcode);
+// FIXME --
+// There may be multiple images so create a canvas
+// for each value in specimen->image_filename_nis 
 
-$canvas->height = $props['height'];
-$canvas->width = $props['width'];
+$out->items = array();
 
-// annotation page
-$canvas->items = array();
-$image_anno_page = new stdClass();
-$canvas->items[] = $image_anno_page;
-$image_anno_page->id = "$base_url#annotation_page";
-$image_anno_page->type = "AnnotationPage";
+foreach($specimen->image_filename_nis as $file){
 
-// annotation
-$image_anno = new stdClass();
-$image_anno_page->items = array($image_anno);
-$image_anno->id = "$base_url#annotation";
-$image_anno->type = "Annotation";
-$image_anno->motivation = "Painting";
-$image_anno->body = new stdClass();
-$image_anno->body->id = "$base_url/info.json";
-$image_anno->body->type = "Image";
-$image_anno->body->format = "image/jpeg";
+	$image = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file);
 
-$service = new stdClass();
-$service->id = $base_url;
-$service->type = "ImageService3";
-$service->profile = "level0";
+	// get the props for the image
+	if($image != $barcode){
+		$props = get_image_properties($image);
+	}
+	
+	$canvas = new stdClass();
+	$out->items[] = $canvas;
+	$canvas->id = $base_url . $image . "#canvas";
+	$canvas->type = "Canvas";
+	$canvas->label = create_label($image);
 
-$image_anno->body->service = array($service);
+	$canvas->height = $props['height'];
+	$canvas->width = $props['width'];
 
-$image_anno->body->height = $props['height'];
-$image_anno->body->width = $props['width'];
+	// annotation page
+	$canvas->items = array();
+	$image_anno_page = new stdClass();
+	$canvas->items[] = $image_anno_page;
+	$image_anno_page->id = $base_url . $image . "#annotation_page";
+	$image_anno_page->type = "AnnotationPage";
 
-$image_anno->target = "$base_url#canvas";
+	// annotation
+	$image_anno = new stdClass();
+	$image_anno_page->items = array($image_anno);
+	$image_anno->id = $base_url . $image ."#annotation";
+	$image_anno->type = "Annotation";
+	$image_anno->motivation = "Painting";
+	$image_anno->body = new stdClass();
+	$image_anno->body->id = $base_url . $image . "/info.json";
+	$image_anno->body->type = "Image";
+	$image_anno->body->format = "image/jpeg";
 
+	$service = new stdClass();
+	$service->id = $base_url . $image;
+	$service->type = "ImageService3";
+	$service->profile = "level0";
+
+	$image_anno->body->service = array($service);
+
+	$image_anno->body->height = $props['height'];
+	$image_anno->body->width = $props['width'];
+
+	$image_anno->target = $base_url . $image . "#canvas";
+
+}
 
 //print_r($out);
 $json = json_encode( $out, JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES );

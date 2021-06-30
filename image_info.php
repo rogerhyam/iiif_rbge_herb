@@ -2,7 +2,8 @@
 
 include_once('config.php');
 
-$barcode = $_GET['barcode'];
+$image_url = $base_url . $_GET['barcode']; // may be file name
+
 
 $props = get_image_properties($barcode);
 $scale_factors = $props['layers'];
@@ -15,8 +16,8 @@ $tiles->scaleFactors = $scale_factors;
 // generate the json
 $out = new stdClass();
 $out->__at__context = "http://iiif.io/api/image/3/context.json";
-$out->id = "$base_url";
-$out->__at__id = "$base_url";
+$out->id = "$image_url";
+$out->__at__id = "$image_url";
 $out->type = "ImageService3";
 $out->protocol = "http://iiif.io/api/image"; 
 $out->profile = "level0"; // what features are supported

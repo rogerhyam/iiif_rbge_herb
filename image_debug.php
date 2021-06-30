@@ -8,10 +8,7 @@
 	$props = get_image_properties($barcode);
 	
 	$layers = $props['zoomify_layers'];
-		
-		
-	
-	
+			
 	
 	// print out a summary of the layers
 ?>

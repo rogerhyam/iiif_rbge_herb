@@ -7,10 +7,12 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 date_default_timezone_set('UTC');
 
-define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/");
+define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/select");
+
+//define('SOLR_QUERY_URI', "https://iiif.rbge.org.uk/solr_proxy.php");
 
 // we are always called with a barcode so let's build a base URI for all the subsequent calls
-$base_url = 'https://'. $_SERVER['HTTP_HOST'] . '/herb/iiif/' . @$_GET['barcode'];
+$base_url = 'https://'. $_SERVER['HTTP_HOST'] . '/herb/iiif/';
 
 $image_url = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path=". @$_GET['barcode'].".zip;file:";
 

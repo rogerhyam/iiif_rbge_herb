@@ -21,7 +21,7 @@ class SolrConnection
 
 	function query($query){
     
-	    $uri = SOLR_QUERY_URI . 'select?q=' . urlencode($query) . '&rows=1000';
+	    $uri = SOLR_QUERY_URI . '?q=' . urlencode($query) . '&rows=1000';
 		
 	    $ch = curl_init( $uri );
 	    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );

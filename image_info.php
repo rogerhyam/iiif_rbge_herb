@@ -2,8 +2,9 @@
 
 include_once('config.php');
 
-$image_url = $base_url . $_GET['barcode']; // may be file name
+$barcode = $_GET['barcode']; // may be file name
 
+$image_url = $base_url . $barcode;
 
 $props = get_image_properties($barcode);
 $scale_factors = $props['layers'];

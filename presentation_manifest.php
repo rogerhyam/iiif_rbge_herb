@@ -5,7 +5,7 @@ include_once('SolrConnection.php');
 
 
 // creates a iiif manifest for the specimen passed in 
-$barcode = $_GET['barcode'];
+$barcode = @$_GET['barcode'];
 
 $solr = new SolrConnection();
 $specimen = $solr->get_specimen($barcode);
@@ -89,14 +89,46 @@ $out->logo = (object)array(
 	"_id" => 'https://'. $_SERVER['HTTP_HOST'] . '/herb/rbge_logo.png'
 );
 
-
 $out->provider = array();
 $out->provider[] = $rbge;
 
-// FIXME --
-// There may be multiple images so create a canvas
-// for each value in specimen->image_filename_nis 
+// see also links to other places
+/*
+	"seeAlso": [
+        {
+          "id": "https://data.rbge.org.uk/herb/E00421509",
+          "type": "Text",
+          "label": { "en": [ "Catalogue page for this specimen." ] },
+          "format": "text/html"
+        },
+       {
+          "id": "https://data.rbge.org.uk/herb/E00421509",
+          "type": "Dataset",
+          "label": { "en": [ "Specimen Description in RDF XML." ] },
+          "format": "application/rdf+xml"
+        }
+]
+*/
+$out->seeAlso = array();
 
+// link to web page for specimen
+$out->seeAlso[] = (object)array(
+	'id' => "https://data.rbge.org.uk/herb/" . $barcode,
+	'type' => "Text",
+	'label' => create_label("Catalogue page for this specimen."),
+	'format' => "text/html",
+);
+
+// link to RDF data for specimen
+$out->seeAlso[] = (object)array(
+	'id' => "https://data.rbge.org.uk/herb/" . $barcode,
+	'type' => "Dataset",
+	'label' => create_label("Specimen description in RDF XML."),
+	'format' => "application/rdf+xml",
+);
+
+
+// There may be multiple images so create a canvas
 $out->items = array();
 
 foreach($specimen->image_filename_nis as $file){

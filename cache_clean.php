@@ -3,7 +3,7 @@
 // called by cron to keep the cache from getting too big.
 
 $cache = 'cache';
-$max_size_mb = 500; // megabytes
+$max_size_mb = 1000; // megabytes - doubled
 
 $max_size = $max_size_mb * 1048576;
 $size = get_directory_size($cache);

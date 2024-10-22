@@ -11,7 +11,7 @@ class SolrConnection
 	
 	function get_specimen($barcode){
 		
-		$back = $this->query('barcode_s:' . $barcode);		
+		$back = $this->query('barcode_t:' . $barcode);		
 		if(isset($back->response) && isset($back->response->docs) && count($back->response->docs)){
 			return $back->response->docs[0];
 		}

@@ -16,9 +16,26 @@ $base_url = 'https://'. $_SERVER['HTTP_HOST'] . '/herb/iiif/';
 
 $image_url = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path=". @$_GET['barcode'].".zip;file:";
 
-function get_image_properties($barcode){
-	
-	$uri = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path=$barcode.zip;file:/ImageProperties.xml&noCacheSfx=1544716865761";
+/**
+ * Will return image properties for a barcode
+ * @param barcode is the barcode of the specimen
+ * @param index which image of the specimen details are wanted for. Defaults to 0 as nearly all specimens will have a single image.
+ * 
+ */
+function get_image_properties($barcode, $index = 0){
+
+	// we need to get the file name from SOLR. Nearly always it is the barcode. But not always!
+	$solr = new SolrConnection();
+	$specimen = $solr->getSpecimen($barcode);
+	if(!$specimen || !isset($specimen->image_filename_nis) || count($specimen->image_filename_nis) < 1 || $index > count($specimen->image_filename_nis)){
+		http_response_code(404);
+		echo "<h1>Not Found</h1>";
+		echo "<p>Could not find image file name for the $index image of specimen $barcode.";
+		exit;
+	}
+
+	$file_name = $specimen->image_filename_nis[$index];
+	$uri = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path={$file_name};file:/ImageProperties.xml&noCacheSfx=1544716865761";
 
 	// get the image properties
 
@@ -32,7 +49,7 @@ function get_image_properties($barcode){
 	if ($xml === false) {
 		http_response_code(404);
 		echo "<h1>Not Found</h1>";
-		echo "<p>The barcode $barcode couldn't be found";
+		echo "<p>Failed to read data for file $file_name for specimen $barcode";
 		foreach(libxml_get_errors() as $error) {
 			echo "<p>";
 			echo $error->message;

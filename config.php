@@ -7,6 +7,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 date_default_timezone_set('UTC');
 
+require_once('SolrConnection.php');
+
 define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/select");
 
 //define('SOLR_QUERY_URI', "https://iiif.rbge.org.uk/solr_proxy.php");

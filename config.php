@@ -26,7 +26,7 @@ function get_image_properties($barcode, $index = 0){
 
 	// we need to get the file name from SOLR. Nearly always it is the barcode. But not always!
 	$solr = new SolrConnection();
-	$specimen = $solr->getSpecimen($barcode);
+	$specimen = $solr->get_specimen($barcode);
 	if(!$specimen || !isset($specimen->image_filename_nis) || count($specimen->image_filename_nis) < 1 || $index > count($specimen->image_filename_nis)){
 		http_response_code(404);
 		echo "<h1>Not Found</h1>";

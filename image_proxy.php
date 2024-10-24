@@ -188,7 +188,13 @@ function get_full_image($level, $image_props){
 		for ($j=0; $j < $layer['cols']; $j++) {		
 			$tile_group = get_tile_group($layers, $level, $j, $i);
 			$uri = "$image_url/TileGroup$tile_group/$level-$j-$i.jpg";
-			$row->addImage(new Imagick($uri));
+			try{
+				$row->addImage(new Imagick($uri));
+			}catch(Exception $e){
+				echo 'Caught exception: ',  $e->getMessage(), "\n";
+				echo "Trying to add image $uri\n";
+			}
+			
 		}
 	
 		// stitch the row into a single image

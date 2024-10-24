@@ -16,15 +16,14 @@ define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/select"
 // we are always called with a barcode so let's build a base URI for all the subsequent calls
 $base_url = 'https://'. $_SERVER['HTTP_HOST'] . '/herb/iiif/';
 
-$image_url = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path=". @$_GET['barcode'].".zip;file:";
+if(@$_GET['barcode']){
+	$file_name = get_image_file_name(@$_GET['barcode']);
+	$image_url = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path=". $file_name  .".zip;file:";	
+}else{
+	$image_url = null;
+}
 
-/**
- * Will return image properties for a barcode
- * @param barcode is the barcode of the specimen
- * @param index which image of the specimen details are wanted for. Defaults to 0 as nearly all specimens will have a single image.
- * 
- */
-function get_image_properties($barcode, $index = 0){
+function get_image_file_name($barcode, $index = 0){
 
 	// we need to get the file name from SOLR. Nearly always it is the barcode. But not always!
 	$solr = new SolrConnection();
@@ -37,6 +36,18 @@ function get_image_properties($barcode, $index = 0){
 	}
 
 	$file_name = $specimen->image_filename_nis[$index];
+	
+}
+
+/**
+ * Will return image properties for a barcode
+ * @param barcode is the barcode of the specimen
+ * @param index which image of the specimen details are wanted for. Defaults to 0 as nearly all specimens will have a single image.
+ * 
+ */
+function get_image_properties($barcode, $index = 0){
+
+	$file_name = get_image_file_name($barcode, $index);
 	$uri = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path={$file_name};file:/ImageProperties.xml&noCacheSfx=1544716865761";
 
 	// get the image properties

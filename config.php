@@ -36,6 +36,8 @@ function get_image_file_name($barcode, $index = 0){
 	}
 
 	$file_name = $specimen->image_filename_nis[$index];
+
+	return $file_name;
 	
 }
 

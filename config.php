@@ -18,7 +18,7 @@ $base_url = 'https://'. $_SERVER['HTTP_HOST'] . '/herb/iiif/';
 
 if(@$_GET['barcode']){
 	$file_name = get_image_file_name(@$_GET['barcode']);
-	$image_url = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path=". $file_name  .".zip;file:";	
+	$image_url = "https://data.rbge.org.uk/search/herbarium/scripts/getzoom3.php?path=" . $file_name  . ";file:";	
 }else{
 	$image_url = null;
 }

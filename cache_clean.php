@@ -2,8 +2,11 @@
 	
 // called by cron to keep the cache from getting too big.
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $cache = 'cache';
-$max_size_mb = 1000; // megabytes - doubled
+$max_size_mb = 10000; // megabytes - ten gig now
 
 $max_size = $max_size_mb * 1048576;
 $size = get_directory_size($cache);
@@ -27,7 +30,7 @@ if($size > $max_size){
 	}
 	
 	// sort it by access time descending (most recent first)
-	usort($files_by_access, sort_function);
+	usort($files_by_access, "sort_function");
 	
 	// work through and delete the ones after we have reached the max size
 	$running_size = 0; // bytes

@@ -26,16 +26,25 @@ if(@$_GET['barcode']){
 function get_image_file_name($barcode, $index = 0){
 
 	// we need to get the file name from SOLR. Nearly always it is the barcode. But not always!
-	$solr = new SolrConnection();
-	$specimen = $solr->get_specimen($barcode);
-	if(!$specimen || !isset($specimen->image_filename_nis) || count($specimen->image_filename_nis) < 1 || $index > count($specimen->image_filename_nis)){
-		http_response_code(404);
-		echo "<h1>Not Found</h1>";
-		echo "<p>Could not find image file name for the $index image of specimen $barcode.";
-		exit;
-	}
 
-	$file_name = $specimen->image_filename_nis[$index];
+	// the "barcode" may be qualified with _a _b etc after it (it is actually a file name itself!
+	if(preg_match('/^E[0-9]{8}$/', $barcode)){
+		// we have a pure barcode so get the specimen and return the image at the requested index.
+		$solr = new SolrConnection();
+		$specimen = $solr->get_specimen($barcode);
+		if(!$specimen || !isset($specimen->image_filename_nis) || count($specimen->image_filename_nis) < 1 || $index > count($specimen->image_filename_nis)){
+			http_response_code(404);
+			echo "<h1>Not Found</h1>";
+			echo "<p>Could not find image file name for the $index image of specimen $barcode.";
+			exit;
+		}
+	
+		$file_name = $specimen->image_filename_nis[$index];
+	}else{
+		// we have been given some random string, probably something like E01197039_a
+		// in this case it IS the file name sans .zip
+		$file_name = $barcode . '.zip';
+	}
 
 	return $file_name;
 	

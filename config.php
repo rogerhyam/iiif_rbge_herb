@@ -11,15 +11,16 @@ require_once('SolrConnection.php');
 
 // the first thing we do it check for scrapers as they are causing issues
 // Regular expression to match common browsers
+$ip_address = @$_SERVER['REMOTE_ADDR'];
+$agent = @$_SERVER['HTTP_USER_AGENT'] ? $_SERVER['HTTP_USER_AGENT'] : 'No agent';
 $browserlist = '/(opera|aol|msie|firefox|chrome|konqueror|safari|netscape|navigator|mosaic|lynx|amaya|omniweb|avant|camino|flock|seamonkey|mozilla|gecko)+/i';
-$ip_address = $_SERVER['REMOTE_ADDR'];
 
-// Test for browsers
-if (!preg_match($browserlist, $_SERVER['HTTP_USER_AGENT']) && !preg_match('/^192\.168/', $ip_address)) {
+// Test for browsers and local servers
+if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
 	// they are a simple script not trying to spoof a browser
 	// let them wait a bit - this could be more sophisticated in time...
 	sleep(10);
-	error_log("IIIF delayed $ip_address with browser {$_SERVER['HTTP_USER_AGENT']}");
+	error_log("IIIF delayed $ip_address with browser {$agent}");
 }
 
 define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/select");

@@ -9,6 +9,17 @@ date_default_timezone_set('UTC');
 
 require_once('SolrConnection.php');
 
+// the first thing we do it check for scrapers as they are causing issues
+// Regular expression to match common browsers
+$browserlist = '/(opera|aol|msie|firefox|chrome|konqueror|safari|netscape|navigator|mosaic|lynx|amaya|omniweb|avant|camino|flock|seamonkey|mozilla|gecko)+/i';
+
+// Test for browsers
+if (!preg_match($browserlist, $_SERVER['HTTP_USER_AGENT'])) {
+	// they are a simple script not trying to spoof a browser
+	// let them wait a bit - this could be more sophisticated in time...
+	sleep(10);
+}
+
 define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/select");
 
 //define('SOLR_QUERY_URI', "https://iiif.rbge.org.uk/solr_proxy.php");

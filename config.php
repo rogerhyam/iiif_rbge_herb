@@ -175,5 +175,3 @@ function get_tile_group($layers, $level, $col, $row){
 	return floor($number_tiles/256);
 	
 }
-	
-?>

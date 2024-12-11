@@ -37,8 +37,11 @@ if($_GET['region'] == 'full'){
 	}
 	
 	// got to here so they are not asking for a image size we understand.
-	http_response_code(400);
-	echo "Sorry: Can only handle full image requests of specific size.";
+	if(!headers_sent()){
+		http_response_code(400);
+		echo "Sorry: Can only handle full image requests of specific size.";
+	}
+	
 	exit;
 	
 }else{

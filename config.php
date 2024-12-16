@@ -35,8 +35,8 @@ if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_addres
 		echo "<h1>Too many requests</h1>";
 		echo "<p>Unfortunately, due to a small group of people who are clever enough to write Python code but 
 		stupid enough not to realise they are creating a denial of service attack,
-		we are having to throttle these kinds of calls at the moment. Take it slow and only ask for the data you really need.
-		If you need it ALL ask us for a download it. Please don't scrape our IIIF server!</p>";
+		we are having to throttle these kinds of call at the moment. Take it slow and only ask for the data you really need.
+		If you need it ALL ask us for a download. Please don't scrape our IIIF server! rhyam@rbge.org.uk</p>";
 		error_log("IIIF delayed too many requests for $ip_address with browser {$agent}");
 		exit;
 	}

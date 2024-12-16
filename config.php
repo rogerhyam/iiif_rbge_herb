@@ -19,7 +19,7 @@ $browserlist = '/(opera|aol|msie|firefox|chrome|konqueror|safari|netscape|naviga
 if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
 	// they are a simple script not trying to spoof a browser
 	// let them wait a bit - this could be more sophisticated in time...
-	sleep(5);
+	sleep(10);
 	error_log("IIIF delayed $ip_address with browser {$agent}");
 }
 

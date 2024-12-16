@@ -17,10 +17,20 @@ $browserlist = '/(opera|aol|msie|firefox|chrome|konqueror|safari|netscape|naviga
 
 // Test for browsers and local servers
 if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
+
 	// they are a simple script not trying to spoof a browser
-	// let them wait a bit - this could be more sophisticated in time...
-	sleep(10);
-	error_log("IIIF delayed $ip_address with browser {$agent}");
+	
+	// do we have a monitor file for them?
+	$log_file = 'throttle/' . $ip_address . '.txt';
+	if($call_count = @file_get_contents($log_file)){
+		$call_count = (int)$call_count;
+	}else{
+		$call_count = 0;
+	}
+	file_put_contents($log_file, $call_count + 1);
+	sleep($call_count);
+	error_log("IIIF delayed $call_count seconds for $ip_address with browser {$agent}");
+	
 }
 
 define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/select");

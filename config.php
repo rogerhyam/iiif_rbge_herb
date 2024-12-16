@@ -22,15 +22,24 @@ if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_addres
 	
 	// do we have a monitor file for them?
 	$log_file = 'throttle/' . $ip_address . '.txt';
-	if($call_count = @file_get_contents($log_file)){
-		$call_count = (int)$call_count;
+	if($last_call = @file_get_contents($log_file)){
+		$last_call = (int)$last_call;
 	}else{
-		$call_count = 0;
+		$last_call = 0;
 	}
-	file_put_contents($log_file, $call_count + 1);
-	sleep($call_count);
-	error_log("IIIF delayed $call_count seconds for $ip_address with browser {$agent}");
-	
+	$now = time();
+	file_put_contents($log_file, $now);
+
+	if($now - $last_call < 3){
+		http_response_code(429);
+		echo "<h1>Too many requests</h1>";
+		echo "<p>Unfortunately, due to a small group of people who are clever enough to write Python code but 
+		stupid enough not to realise they are creating a denial of service attack,
+		we are having to throttle these kinds of calls at the moment. Take it slow and only ask for the data you really need.
+		If you need it ALL ask us for a download it. Please don't scrape our IIIF server!</p>";
+		error_log("IIIF delayed too many requests for $ip_address with browser {$agent}");
+	}
+
 }
 
 define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/select");

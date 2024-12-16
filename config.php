@@ -38,6 +38,7 @@ if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_addres
 		we are having to throttle these kinds of calls at the moment. Take it slow and only ask for the data you really need.
 		If you need it ALL ask us for a download it. Please don't scrape our IIIF server!</p>";
 		error_log("IIIF delayed too many requests for $ip_address with browser {$agent}");
+		exit;
 	}
 
 }

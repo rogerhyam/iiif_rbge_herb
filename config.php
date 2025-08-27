@@ -19,7 +19,15 @@ $ip_address = @$_SERVER['REMOTE_ADDR'];
 // if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
 
 // if you are asking for a full size and you aren't a local server then you get throttled 
-if (!preg_match('/[0-9]+\/full\/[0-9]+/', $_SERVER['REQUEST_URI']) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
+if (
+	preg_match('/[0-9]+\/full\/[0-9]+/', $_SERVER['REQUEST_URI']) // asking for full
+	&&
+	!preg_match('/data\.rbge\.org\.uk/', $_SERVER['HTTP_REFERER']) // not on our page
+	&&
+	!preg_match('/www\.europeana\.eu/', $_SERVER['HTTP_REFERER']) // not on our page
+	&&
+	!preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address) // not a local server
+	){
 
 	// do we have a monitor file for them?
 	$log_file = 'throttle/' . $ip_address . '.txt';

@@ -12,14 +12,15 @@ require_once('SolrConnection.php');
 // the first thing we do it check for scrapers as they are causing issues
 // Regular expression to match common browsers
 $ip_address = @$_SERVER['REMOTE_ADDR'];
-$agent = @$_SERVER['HTTP_USER_AGENT'] ? $_SERVER['HTTP_USER_AGENT'] : 'No agent';
-$browserlist = '/(opera|aol|msie|firefox|chrome|konqueror|safari|netscape|navigator|mosaic|lynx|amaya|omniweb|avant|camino|flock|seamonkey|mozilla|gecko)+/i';
+//$agent = @$_SERVER['HTTP_USER_AGENT'] ? $_SERVER['HTTP_USER_AGENT'] : 'No agent';
+//$browserlist = '/(opera|aol|msie|firefox|chrome|konqueror|safari|netscape|navigator|mosaic|lynx|amaya|omniweb|avant|camino|flock|seamonkey|mozilla|gecko)+/i';
 
 // Test for browsers and local servers
-if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
+// if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
 
-	// they are a simple script not trying to spoof a browser
-	
+// if you are asking for a full size and you aren't a local server then you get throttled 
+if (!preg_match('/[0-9]+\/full\/[0-9]+/', $_SERVER['REQUEST_URI']) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
+
 	// do we have a monitor file for them?
 	$log_file = 'throttle/' . $ip_address . '.txt';
 	if($last_call = @file_get_contents($log_file)){
@@ -33,10 +34,10 @@ if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_addres
 	if($now - $last_call < 3){
 		http_response_code(429);
 		echo "<h1>Too many requests</h1>";
-		echo "<p>Unfortunately, due to a small group of people who are clever enough to write Python code but 
-		stupid enough not to realise they are creating a denial of service attack,
+		echo "<p>Unfortunately, due to a small group of people who are clever enough to write code but 
+		stupid enough not to realise they are creating a denial of service attack to access open data,
 		we are having to throttle these kinds of call at the moment. Take it slow and only ask for the data you really need.
-		If you need it ALL ask us for a download. Please don't scrape our IIIF server! rhyam@rbge.org.uk</p>";
+		If you need it ALL please just ask us for a download. Please don't scrape our IIIF server! rhyam@rbge.org.uk</p>";
 		error_log("IIIF delayed too many requests for $ip_address with browser {$agent}");
 		exit;
 	}

@@ -19,12 +19,16 @@ $ip_address = @$_SERVER['REMOTE_ADDR'];
 // if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
 
 // if you are asking for a full size and you aren't a local server then you get throttled 
+$referer = @$_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : "";
+if($referer) $referer = parse_url($referer, PHP_URL_HOST);
+
+
 if (
 	preg_match('/[0-9]+\/full\/[0-9]+/', $_SERVER['REQUEST_URI']) // asking for full
 	&&
-	!preg_match('/data\.rbge\.org\.uk/', $_SERVER['HTTP_REFERER']) // not on our page
+	!preg_match('/data\.rbge\.org\.uk/', $referer) // not on our page
 	&&
-	!preg_match('/www\.europeana\.eu/', $_SERVER['HTTP_REFERER']) // not on our page
+	!preg_match('/www\.europeana\.eu/', $referer) // not on our page
 	&&
 	!preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address) // not a local server
 	){
@@ -52,7 +56,6 @@ if (
 
 }
 
-exit;
 define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/select");
 
 //define('SOLR_QUERY_URI', "https://iiif.rbge.org.uk/solr_proxy.php");

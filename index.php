@@ -1,3 +1,6 @@
+<?php
+    http_response_code(401);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,13 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" type="text/css" href="uv/uv.css">
-    <title>RBGE Herbarium IIIF Endpoint</title>
+    <title>Unauthorized: RBGE Herbarium IIIF Endpoint</title>
 </head>
 <body>
-    <h1>RBGE Herbarium IIIF Endpoint</h1>
+    <h1>Unauthorized</h1>
 
     <p>
-        Unfortunately we have had to move our IIIF server to whitelist only access.
+        Unfortunately we have had to move the RBGE Herbarium IIIF server to whitelist only access.
         It ran for five years totally open to anyone but over the last year has been brought down by excessive calls for data.
         From the logs we identify three main causes of this:
     </p>

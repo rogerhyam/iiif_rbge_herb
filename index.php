@@ -11,29 +11,28 @@
     <h1>RBGE Herbarium IIIF Endpoint</h1>
 
     <p>
-        Unfortunately we have had to move our IIIF server to a whitelist only access.
+        Unfortunately we have had to move our IIIF server to whitelist only access.
         It ran for five years totally open to anyone but over the last year has been brought down by excessive calls for data.
-        From the logging data we identify three main causes of this:
+        From the logs we identify three main causes of this:
     </p>
 
     <ol>
         <li>The "AI" investment bubble has provided massive resources for companies to hoover up as much data as possible to train their models.
             They will indescriminately call every URL they come across in other data sets.
-            Ironically this approach isn't very "Intelligent" as the open data can usually be downloaded by more efficient means.
         </li>
         <li>An increasing number of researchers are writing their own code (possibly using "AI") to scrape data from the internet for analysis or just to archive.
             This has always happened but tools and laptops are fast enough now to create denial of service attacks on other academic institutions.
-            We can see this happening in the logs when we get tens of requests a second from an academic IP address for ours on end.
+            We can see this happening in the logs when we get tens of requests per second from an academic IP address for ours on end.
             Training needs to be increased to prevent this.
         </li>
         <li>
-            Many of the calls are impossible to pin down coming from a wide range of IP addresses with a variety of user agent strings and we suspect these are mallicious attacks
-            aimed at institutions within a country by foreign actors. They may be 
+            Many of the calls are impossible to pin down coming from a wide range of IP addresses with a variety of user agent strings and we suspect these are malicious attacks
+            aimed at random organisations within a country.
         </li>
     </ol>
     
     <p>
-        We have spent many hours trying to keep this service freely available by selectively filtering out bots and irresponsible users but for the time being all we can do is block access to those not on our whitelist of IP addresses.
+        We have spent many hours trying to keep this service freely available by selectively filtering out bots and irresponsible users but for the time being all we can do is block access to those not on our whitelist.
     </p>
 
     <p>

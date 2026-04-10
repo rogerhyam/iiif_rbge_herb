@@ -9,6 +9,10 @@ date_default_timezone_set('UTC');
 
 require_once('SolrConnection.php');
 
+/*
+
+Now we have gone to a white list this amateur throttling code can go
+
 // the first thing we do it check for scrapers as they are causing issues
 // Regular expression to match common browsers
 $ip_address = @$_SERVER['REMOTE_ADDR'];
@@ -19,6 +23,7 @@ $ip_address = @$_SERVER['REMOTE_ADDR'];
 // if (!preg_match($browserlist, $agent) && !preg_match('/^192\.168\./', $ip_address) && !preg_match('/^193\.62\./', $ip_address)) {
 
 // if you are asking for a full size and you aren't a local server then you get throttled 
+
 $referer = @$_SERVER['HTTP_REFERER'] ? $_SERVER['HTTP_REFERER'] : "";
 if($referer) $referer = parse_url($referer, PHP_URL_HOST);
 
@@ -55,6 +60,7 @@ if (
 	}
 
 }
+*/
 
 define('SOLR_QUERY_URI', "http://webstorage.rbge.org.uk:8983/solr/bgbase/select");
 

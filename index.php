@@ -25,11 +25,10 @@
         </li>
         <li>An increasing number of researchers are writing their own code (possibly using "AI") to scrape data from the internet for analysis or just to archive.
             This has always happened but tools and laptops are fast enough now to create denial of service attacks on other academic institutions.
-            We can see this happening in the logs when we get tens of requests per second from an academic IP address for ours on end.
-            Training needs to be increased to prevent this.
+            We can see this happening in the logs when we get tens of requests per second from an academic IP address.
         </li>
         <li>
-            Many of the calls are impossible to pin down coming from a wide range of IP addresses with a variety of user agent strings and we suspect these are malicious attacks
+            Many of the calls are impossible to pin down, coming from a wide range of IP addresses with a variety of user agent strings. We suspect these are malicious attacks
             aimed at random organisations within a country.
         </li>
     </ol>

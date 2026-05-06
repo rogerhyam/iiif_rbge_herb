@@ -14,9 +14,9 @@
     <h1>Unauthorized</h1>
 
     <p>
-        Unfortunately we have had to move the RBGE Herbarium IIIF server to whitelist only access.
-        It ran for five years totally open to anyone but over the last year has been brought down by excessive calls for data.
-        From the logs we identify three main causes of this:
+        Unfortunately we have had to move the RBGE Herbarium IIIF server to allowlist only access.
+        The service ran for five years totally open to anyone but over the last year has been brought down by excessive calls for data.
+        From the logs we identify three main causes of excessive load:
     </p>
 
     <ol>
@@ -28,13 +28,15 @@
             We can see this happening in the logs when we get tens of requests per second from an academic IP address.
         </li>
         <li>
-            Many of the calls are impossible to pin down, coming from a wide range of IP addresses with a variety of user agent strings. We suspect these are malicious attacks
-            aimed at random organisations within a country.
+            Many of the calls are impossible to pin down, coming from a wide range of IP addresses with a variety of user agent strings.
+            We suspect these are malicious attacks aimed at random organisations within a country.
         </li>
     </ol>
     
     <p>
-        We have spent many hours trying to keep this service freely available by selectively filtering out bots and irresponsible users but for the time being all we can do is block access to those not on our whitelist.
+        We have spent many hours trying to keep this service freely available by selectively filtering out bots 
+        and irresponsible users with a <strong>denylist</strong> but maintaining this list has proved impossible.
+        For the time being all we can do is block access to those not on our <strong>allowlist</strong>.
     </p>
 
     <p>
